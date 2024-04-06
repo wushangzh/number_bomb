@@ -7,17 +7,6 @@ import PySimpleGUI as sg
 import game_initials
 
 
-def play_audio():
-    pygame.init()
-    pygame.mixer.init()
-
-    pygame.mixer.music.load(game_initials.SOUND_PATH)
-    pygame.mixer.music.play()
-
-
-audio_thread = threading.Thread(target=play_audio)
-
-
 class Game:
     def __init__(self):
         self.initials = game_initials.GameInitials()
@@ -31,6 +20,8 @@ class Game:
 
         self.window = None
 
+        self.audio_thread = None
+
         self.layout = [
             [sg.Text('数字炸弹，启动！炸弹初始范围在0-100！', font=('微软雅黑', 20))],
             [sg.Text('你的猜测：')],
@@ -43,6 +34,17 @@ class Game:
             [sg.Button('退出', key='-QUIT-', visible=False)]
         ]
 
+    def init_audio(self):
+        pygame.init()
+        pygame.mixer.init()
+
+        pygame.mixer.music.load(self.initials.sound_path)
+        pygame.mixer.music.play()
+
+    def play_audio(self):
+        self.audio_thread = threading.Thread(target=self.init_audio())
+        self.audio_thread.start()
+
     def set_window(self, window):
         self.window = window
 
@@ -51,15 +53,13 @@ class Game:
             return self.initials.lower_bound
 
         else:
-            guess = random.randint(self.initials.lower_bound, self.initials.upper_bound)
+            guess = random.randint(
+                self.initials.lower_bound, self.initials.upper_bound)
             return guess
 
     def process_event(self, event, values):
         if self.game_over:
-            if pygame.mixer.music.get_busy():
-                return
-            else:
-                return
+            return
 
         if event == '-OK-':
             player_guess_num = int(values['-PLAYER_GUESS-'])
@@ -69,13 +69,14 @@ class Game:
                 if player_guess_num in self.player_guessed:
                     sg.popup_error('你已经猜过了这个数字！')
                 else:
-                    sg.popup_error(f'请输入介于 {self.guess_range[0]} 和 {self.guess_range[1]} 之间的数字！')
+                    sg.popup_error(f'请输入介于 {self.guess_range[0]} 和 {
+                                   self.guess_range[1]} 之间的数字！')
                 return
 
             self.player_guessed.add(player_guess_num)
 
             if player_guess_num == self.initials.target_num:
-                audio_thread.start()
+                self.play_audio()
                 self.window['-PLAYER_OUTPUT-'].update(
                     f'砰————炸弹被你引爆了！炸弹数字为：{self.initials.target_num}')
                 self.game_over = True
@@ -106,7 +107,7 @@ class Game:
                 self.window['-COMPUTER_GUESS-'].update(computer_guess_num)
 
                 if computer_guess_num == self.initials.target_num:
-                    audio_thread.start()
+                    self.play_audio()
                     self.game_over = True
                     self.window['-COMPUTER_OUTPUT-'].update(
                         f'砰————炸弹被电脑引爆了！炸弹数字为：{self.initials.target_num}')

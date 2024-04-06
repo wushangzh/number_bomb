@@ -10,6 +10,6 @@ class GameInitials:
         self.upper_bound = 100
 
 
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-RES_DIR = os.path.join(os.path.dirname(CURRENT_DIR), 'res')
-SOUND_PATH = os.path.join(RES_DIR, 'bomb.mp3')
+        self.current_dir = os.path.dirname(os.path.abspath(__file__))
+        self.res_dir = os.path.join(os.path.dirname(self.current_dir), 'res')
+        self.sound_path = os.path.join(self.res_dir, 'bomb.mp3')
