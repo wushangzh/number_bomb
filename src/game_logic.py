@@ -23,7 +23,7 @@ class Game:
         self.audio_thread = None
 
         self.layout = [
-            [sg.Text('数字炸弹，启动！炸弹初始范围在0-100！', font=('微软雅黑', 20))],
+            [sg.Text('炸弹已经安放！初始范围在0-100！', font=('微软雅黑', 20))],
             [sg.Text('你的猜测：')],
             [sg.InputText(size=(10, 1), key='-PLAYER_GUESS-'),
              sg.Button('确认', key='-OK-')],
