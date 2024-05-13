@@ -3,4 +3,5 @@
 src/__pycache__
 /build/
 /dist/
+.gitignore
 main.spec
